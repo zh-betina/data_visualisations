@@ -1,0 +1,49 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/styles.css' %}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <title>Visualisations</title>
+</head>
+</head>
+
+<body>
+    <div class="bgr">
+        <h1>Visualisations</h1>
+        <div class="sections">
+            <section class="categories_section">
+                <h2>Catégories</h2>
+                <li>
+                    <ul class="category"><a href="/">Scatter plots</a></ul>
+                    <ul class="category"><a href="/tree-map">Tree maps</a></ul>
+                    <ul class="category"><a href="/maps">Choropleth maps</a></ul>
+                    <ul class="category"><a href="/heat-map">Heatmaps</a></ul>
+                    <ul class="category"><a href="/bar-plot">Bar plots</a></ul>
+                    <ul class="category"><a href="/pie-chart">Pie charts</a></ul>
+                    <ul class="category"><a href="/line-chart">Line charts</a></ul>
+                    <ul class="category"><a href="/ohlc-chart">OHLC charts</a></ul>
+                </li>
+            </section>
+            <section class="data_section">
+                <h2>{{title}}</h2>
+                {% for item in items %}
+                {% if item.img %}
+                <img class="visu" src="data:image/png;base64,{{ item.img }}" alt="{{item.alt}}">
+                {% else %}
+                {{item.fig|safe}}
+                {% endif %}
+                {% if item.descr %}
+                <p>{{item.descr}}</p>
+                {% endif %}
+                {% endfor %}
+            </section>
+        </div>
+    </div>
+</body>
+
+</html>

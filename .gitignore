@@ -1,3 +1,5 @@
-/data/valeursfoncieres-2020.txt
-/data/valeursfoncieres-2022.txt
+**/valeursfoncieres-2020.txt
+**/valeursfoncieres-2022.txt
 /.ipynb_checkpoints/*
+/django/venv/
+**/__pycache__
