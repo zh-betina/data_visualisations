@@ -40,7 +40,6 @@ def get_top_bottom_3(depart_surface_terrain):
     bottom3 = depart_surface_terrain.nsmallest(3, 'Surface terrain').sort_values(by='Surface terrain', ascending=True)
     return top3, bottom3
 
-
 def plot_map(data, year):
     depart_surface_terrain=prepare_data_for_map(data)
     fig = px.choropleth(depart_surface_terrain, geojson=geojson, color="Surface terrain",
@@ -87,10 +86,64 @@ def tree_map(data, year):
             'descr': ''
             }
 
+
+
+def idf_map():
+    file_path = os.path.join(settings.BASE_DIR, 'french_real_estate', 'static', 'data', 'departements-ile-de-france.geojson')
+    with open(file_path, 'r') as f:
+        geojson_data = json.load(f)
+
+    valeurs_foncieres_par_departement = {
+        '75': 3441770.136568573,
+        '91': 770506.7914758524,
+        '93': 2868113.9144122913,
+        '94': 1321979.8824858316,
+        '92': 3956037.2285955804,
+        '78': 1185512.017819778,
+        '95': 597660.4584380671,
+        '77': 856098.7548040721
+    }
+
+    #mettre à jour les propriétés 'Valeur fonciere' dans le GeoJSON
+    for feature in geojson_data['features']:
+        code_departement = feature['properties']['code']
+        if code_departement in valeurs_foncieres_par_departement:
+            feature['properties']['Valeur fonciere'] = valeurs_foncieres_par_departement[code_departement]
+        else:
+            feature['properties']['Valeur fonciere'] = None
+
+    #convertir le GeoJSON modifié en GeoDataFrame Plotly Express
+    idf_departments_df = pd.json_normalize(geojson_data['features'])
+
+
+    fig = px.choropleth_mapbox(
+        idf_departments_df,
+        geojson=geojson_data,
+        featureidkey="properties.code",
+        locations='properties.code',
+        color='properties.Valeur fonciere',
+        color_continuous_scale="YlOrRd",
+        range_color=(idf_departments_df['properties.Valeur fonciere'].min(), idf_departments_df['properties.Valeur fonciere'].max()),
+        mapbox_style="carto-positron",
+        zoom=7, center={"lat": 48.858844, "lon": 2.294350},
+        opacity=0.5,
+        width=700, height=500,
+        labels={'Valeur fonciere': 'Valeur foncière moyenne (en euros)'}
+    )
+
+    return {'fig': fig.to_html(full_html=False),
+            'alt': 'Mapbox', 
+            'title': '',
+            'descr': ''
+        }
+
+
 ## Réponse au GET /maps
 def maps(request):
     context={'items': 
-               [plot_map(cache.get('data_2022'), "2022"), plot_map(cache.get('data_2020'), "2020")],
+               [idf_map(),
+                plot_map(cache.get('data_2022'), "2022"),
+                plot_map(cache.get('data_2020'), "2020")],
                'title': 'Cartes'
             }
     return render(request, 'visualisations/index.html', context)

@@ -7,7 +7,7 @@
     <meta charset="UTF-8">
     <link rel="stylesheet" type="text/css" href="{% static 'css/styles.css' %}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <!-- <script src="https://cdn.plot.ly/plotly-latest.min.js"></script> -->
     <title>Visualisations</title>
 </head>
 </head>
@@ -26,19 +26,20 @@
                     <ul class="category"><a href="/bar-plot">Bar plots</a></ul>
                     <ul class="category"><a href="/pie-chart">Pie charts</a></ul>
                     <ul class="category"><a href="/line-chart">Line charts</a></ul>
+                    <ul class="category"><a href="/funnel-chart">Funnel charts</a></ul>
                     <ul class="category"><a href="/ohlc-chart">OHLC charts</a></ul>
                 </li>
             </section>
             <section class="data_section">
                 <h2>{{title}}</h2>
                 {% for item in items %}
+                {% if item.descr %}
+                <p>{{item.descr}}</p>
+                {% endif %}
                 {% if item.img %}
                 <img class="visu" src="data:image/png;base64,{{ item.img }}" alt="{{item.alt}}">
                 {% else %}
                 {{item.fig|safe}}
-                {% endif %}
-                {% if item.descr %}
-                <p>{{item.descr}}</p>
                 {% endif %}
                 {% endfor %}
             </section>

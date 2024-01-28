@@ -14,6 +14,7 @@ import json
 import io
 import seaborn as sns
 import numpy as np
+from . import type_77_prepare
 
 pd.options.mode.chained_assignment = None
 pd.set_option('display.float_format', lambda x: '%.3f' % x)
@@ -52,11 +53,65 @@ def plot_sunburst_commune():
             'descr': f'Sunburst Chart de 10 top communes avec la plus grande surface terrain vendue en 2020 dans le 14'
             }
 
+def type_local_pie_chart():
+    fig = px.pie(data_2022, names='Type local', title='Répartition des types de locaux en France',
+             labels={'Type local': 'Type de local'}, values='Surface reelle bati')
+
+    fig.update_traces(textposition='inside', textinfo='percent+label')
+
+    fig.update_layout(
+        plot_bgcolor='rgba(0, 0, 0, 0)',
+        paper_bgcolor='rgba(255, 255, 255, 0.7)'
+    )
+    
+    return {'fig': fig.to_html(full_html=False),
+            'alt': 'Pie chart', 
+            'title': '',
+            'descr': ''
+            }
+
+def repartition_pie_chart():
+    percentage_df=type_77_prepare()
+    percentage_df['Majorite'] = 'Autre'
+    # percentage_df.loc[percentage_df['Maison'] > 50, 'Majorite'] = 'Maison'
+    # percentage_df.loc[percentage_df['Appartement'] > 50, 'Majorite'] = 'Appartement'
+    # percentage_df['Majorite'] = np.where(percentage_df['Maison'] > 50, 'Maison', np.where(percentage_df['Appartement'] > 50, 'Appartement', ''))
+    
+    condition_maison = (percentage_df['Maison'] > 50)
+    condition_appartement = (percentage_df['Appartement'] > 50)
+
+    percentage_df.loc[condition_maison, 'Majorite'] = 'Maison'
+    percentage_df.loc[condition_appartement, 'Majorite'] = 'Appartement'
+
+    print(percentage_df)
+    majorite_counts = percentage_df['Majorite'].value_counts()#compter nombre de villes dans chaque catégorie
+
+    labels = majorite_counts.index
+    sizes = majorite_counts.values
+
+    plt.figure(figsize=(8, 8))
+    plt.pie(sizes, labels=labels, autopct='%1.1f%%', startangle=90, colors=['skyblue', 'lightcoral', 'lightgreen'])
+    plt.title('Répartition des villes majoritairement constituées de maisons ou d\'appartements')
+
+    buffer = io.BytesIO()
+    plt.savefig(buffer, format='png')
+    buffer.seek(0)
+    plt.close()
+
+    img = base64.b64encode(buffer.read()).decode('utf-8')
+
+    return {'img': img,
+            'alt': "Pie charts",
+            'title': '',
+            'descr': ""
+        }
+
 
 ## responses to GET requests
 def piecharts(request):
     context={'items': 
-               [plot_sunburst_commune()],
-               'title': 'Sunburst Chart de 10 top communes avec la plus grande surface terrain vendue dans le 14'
+               [type_local_pie_chart(),
+                plot_sunburst_commune()],
+               'title': 'Pie charts'
             }
     return render(request, 'visualisations/index.html', context)

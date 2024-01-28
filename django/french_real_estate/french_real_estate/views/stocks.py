@@ -63,6 +63,6 @@ def nexity_cac40_plot():
 def ohlcplots(request):
     context={'items': 
                [nexity_cac40_plot()],
-               'title': f'3 top et 3 derniers departements au niveau de surface vendu en 2022 et 2020'
+               'title': f'Condition sur le marché financière - NEXITY vs CAC40 en 2020'
             }
     return render(request, 'visualisations/index.html', context)

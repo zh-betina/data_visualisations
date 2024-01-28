@@ -1,5 +1,5 @@
 from django.urls import path, include
-from .views import maps, visualisations, compare, linecharts, heatmaps, barplots, piecharts, ohlcplots
+from .views import maps, visualisations, compare, linecharts, heatmaps, barplots, piecharts, ohlcplots, funnelcharts
 
 urlpatterns = [
     path('', visualisations, name="Scatter plots"),
@@ -9,5 +9,6 @@ urlpatterns = [
     path('heat-map', heatmaps , name="Heatmaps"),
     path('bar-plot', barplots , name="Barplots"),
     path('pie-chart', piecharts, name="Pie charts"),
-    path('ohlc-chart', ohlcplots, name="OHLC charts")
+    path('ohlc-chart', ohlcplots, name="OHLC charts"),
+    path('funnel-chart', funnelcharts, name="Funnel charts")
 ]

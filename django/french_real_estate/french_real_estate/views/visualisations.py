@@ -28,11 +28,17 @@ def remove_outliers(data, key):
 if data_2022 is None:
     file_path = os.path.join(settings.BASE_DIR, 'french_real_estate', 'static', 'data', 'valeursfoncieres-2022.txt')
     data_2022 = pd.read_csv(file_path, sep="|", decimal=",")
+    
+    cache.set("data_2022_raw", data_2022, timeout=3600)
 
     data_2022["Date mutation"]=pd.to_datetime(data_2022.loc[:,"Date mutation"], format="%d/%m/%Y")
     data_2022.fillna(0, inplace=True)
     data_2022=data_2022[data_2022["Valeur fonciere"] > 10]
     data_2022=data_2022[data_2022["Surface reelle bati"] > 10]
+
+    variable2 = pd.to_numeric(data_2022['Valeur fonciere'], errors='coerce')
+    variable1 = pd.to_numeric(data_2022['Surface reelle bati'], errors='coerce')
+    data_2022['Prix moyen au m2'] = variable2 / variable1
 
     cache.set('data_2022', data_2022, timeout=3600)
 
